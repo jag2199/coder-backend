@@ -1,39 +1,50 @@
-const fs = require("fs")
+const res = require("express/lib/response")
+
+const productos = [{ "id": 1, "title": "Escuadra", "price": 123.45, "thumbnail": "https://cdn3.iconfinder.com/data/icons/education-209/64/ruler-triangle-stationary-school-256.png" }, { "id": 2, "title": "Calculadora", "price": 234.56, "thumbnail": "https://cdn3.iconfinder.com/data/icons/education-209/64/calculator-math-tool-school-256.png" }, { "id": 3, "title": "Globo Terráqueo", "price": 345.67, "thumbnail": "https://cdn3.iconfinder.com/data/icons/education-209/64/globe-earth-geograhy-planet-school-256.png" }]
 
 class Container {
     constructor(nom) {
         this.nombre = nom
-        this.productos = []
-    }
-    async write() {
-        await fs.promises.writeFile(this.nombre, JSON.stringify(this.productos, null, ''))
+        this.products = productos
     }
 
-    save(object) {
-        object["id"] = this.productos.length ? ((this.productos[this.productos.length - 1].id) + 1) : 1
-        this.productos = [...this.productos, object]
-        this.write()
-        return object.id
+    getAll() {
+        try {
+            return this.products
+        }
+        catch (err) {
+            return "wtf"
+        }
     }
 
-    getByID(id) {
-        let producto = this.productos.find(x => x.id === id)
-        return producto === undefined ? null : producto
+    getById(id) {
+        const producto = this.products.filter(p => p.id == id)[0]
+        return producto ? producto : { error: "producto no encontrado" }
     }
 
-    async getAll() {
-        return this.productos
+    save(obj) {
+        try {
+            obj["id"] = this.products.length ? ((this.products[this.products.length - 1].id) + 1) : 1
+            this.products.push(obj)
+            return obj
+        }
+        catch (err) {
+            console.log(err)
+            return "wtf2"
+        }
     }
 
-    deleteByID(id) {
-        let roductos = this.productos.filter(x => x.id !== id)
-        this.productos = roductos
-        this.write()
+    update(id, obj) {
+        this.products = this.products.map(p, () => {
+            if (p.id == id) {
+                p = { ...obj, id: id }
+            }
+        })
     }
 
-    async deleteAll() {
-        this.productos = []
-        this.write()
+    delete(id) {
+        this.products = this.products.filter(p => p.id !== id)
     }
 }
+
 module.exports = Container

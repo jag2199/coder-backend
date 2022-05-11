@@ -1,36 +1,19 @@
-Container = require("./container")
-container = new Container("./productos.txt")
+const express = require("express")
+const bodyParser = require("body-parser")
+const app = express()
+const PORT = 8080
+const routes = require("./routes.js")
 
-const main = async () => {
-    obj1 = {
-        title: "Belgrano de Cba",
-        price: 400,
-        thumbnail: "aguantebelgrano.lcdll"
-    }
-    let guardarObj1 = container.save(obj1)
-    console.log(guardarObj1)
+app.use(express.json())
 
-    obj2 = {
-        title: "Pablo Vegetti",
-        price: 700,
-        thumbnail: "belgranoElMasGrandeDeCba.gallinaqliadasa"
-    }
-    let guardarObj2 = container.save(obj2)
-    console.log(guardarObj2)
+app.use(bodyParser.urlencoded({
+    extended: true
+}));
 
-    let productoID = container.getByID(2)
-    console.log(productoID)
+app.use("/api/productos", routes)
+// https://github.com/jag2199/desafios-backend.git
+const server = app.listen(PORT, () => {
+    console.log(`Servidor iniciado en el puerto ${server.address().port} ( http://localhost:${server.address().port}/api/productos )`)
+})
 
-    console.log(`Todos los productos son: ${JSON.stringify(await container.getAll())}`)
-
-    container.deleteByID(2)
-
-    console.log(`Ahora todos los productos son: ${JSON.stringify(await container.getAll())}`)
-
-    container.deleteAll()
-
-    console.log(`Ahora todos los productos son: ${JSON.stringify(await container.getAll())}`)
-
-}
-
-main()
+server.on("error", error => console.log("Error culiaw"))
