@@ -6,28 +6,29 @@ const router = Router()
 let container = new Container("./productos.txt")
 
 router.get("/", (req, res) => {
-    res.send(container.getAll())
+    res.render("index")
 })
 
-router.get("/new", (req, res) => {
-    res.sendFile(__dirname + "/index.html")
+router.get("/productos", (req, res) => {
+    res.render("productos", { productos: container.getAll() })
 })
 
-router.get("/:id", (req, res) => {
-    res.send(container.getById(req.params.id))
-})
+// router.get("/:id", (req, res) => {
+//     res.send(container.getById(req.params.id))
+// })
 
-router.post("/", (req, res) => {
+router.post("/productos", (req, res) => {
     console.log(req.body)
-    res.send(container.save(req.body))
+    container.save(req.body)
+    res.redirect("/")
 })
 
-router.put("/:id", (req, res) => {
-    res.send(container.update(req.params.id, req.body))
-})
+// router.put("/:id", (req, res) => {
+//     res.send(container.update(req.params.id, req.body))
+// })
 
-router.delete("/:id", (req, res) => {
-    res.send(container.delete(req.params.id))
-})
+// router.delete("/:id", (req, res) => {
+//     res.send(container.delete(req.params.id))
+// })
 
 module.exports = router
