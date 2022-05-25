@@ -1,11 +1,19 @@
 const res = require("express/lib/response")
 
-const productos = []
-
 class Container {
     constructor(nom) {
         this.nombre = nom
-        this.products = productos
+        this.products = []
+    }
+    read() {
+        try {
+            let contenido = JSON.parse(fs.readFileSync(this.nombre))
+            console.log(contenido)
+            return contenido
+        }
+        catch (error) {
+            return []
+        }
     }
 
     getAll() {

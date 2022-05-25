@@ -6,18 +6,18 @@ const router = Router()
 let container = new Container("./productos.txt")
 
 router.get("/", (req, res) => {
-    res.render("index")
+    res.render("index", { productos: container.getAll() })
 })
 
-router.get("/productos", (req, res) => {
-    res.render("productos", { productos: container.getAll() })
-})
+// router.get("/productos", (req, res) => {
+//     res.render("productos",)
+// })
 
 // router.get("/:id", (req, res) => {
 //     res.send(container.getById(req.params.id))
 // })
 
-router.post("/productos", (req, res) => {
+router.post("/", (req, res) => {
     console.log(req.body)
     container.save(req.body)
     res.redirect("/")
