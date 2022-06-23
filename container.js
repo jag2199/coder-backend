@@ -1,58 +1,81 @@
-const res = require("express/lib/response")
+import knex from "knex"
 
 class Container {
-    constructor(nom) {
+    constructor(options, nom) {
         this.nombre = nom
-        this.products = []
-    }
-    read() {
-        try {
-            let contenido = JSON.parse(fs.readFileSync(this.nombre))
-            console.log(contenido)
-            return contenido
-        }
-        catch (error) {
-            return []
-        }
+        this.db = knex(options)
     }
 
-    getAll() {
+    async getAll() {
         try {
-            return this.products
+            return await this.db.from(this.nombre).select("*")
         }
         catch (err) {
             return "wtf"
         }
     }
 
-    getById(id) {
-        const producto = this.products.filter(p => p.id == id)[0]
-        return producto ? producto : { error: "producto no encontrado" }
-    }
-
-    save(obj) {
+    async getById(id) {
         try {
-            obj["id"] = this.products.length ? ((this.products[this.products.length - 1].id) + 1) : 1
-            this.products.push(obj)
-            return obj
-        }
-        catch (err) {
-            console.log(err)
-            return "wtf2"
+            return await this.db.from.select.where("id", id)
+        } catch (error) {
+            return { error: "producto no encontrado" }
         }
     }
 
-    update(id, obj) {
-        this.products = this.products.map(p, () => {
-            if (p.id == id) {
-                p = { ...obj, id: id }
-            }
-        })
+    async save(obj) {
+        try {
+            await this.db(this.nombre).insert(obj)
+        } catch (error) {
+            console.log(error)
+            throw error
+        }
     }
 
-    delete(id) {
-        this.products = this.products.filter(p => p.id !== id)
+    async update(id, obj) {
+        await this.db.from(this.nombre).where("id", "=", id).update(obj)
+    }
+
+    async delete(id) {
+        await this.db.from(this.nombre).where("id", "=", id).del()
     }
 }
 
 module.exports = Container
+
+// (async () => {
+//     try {
+//         await knex(options).schema.createTable("productos", table => {
+//             table.increments("id").primary().unique()
+//             table.string("nombre").notNullable()
+//             table.float("precio").notNullable()
+//             table.string("thumbnail").notNullable()
+//         })
+//             .then(() => {
+//                 console.log("Tabla productos creada")
+//             })
+//     } catch (error) {
+
+//     }
+// })()
+
+  // read() {
+    //     try {
+    //         let contenido = JSON.parse(fs.readFileSync(this.nombre))
+    //         console.log(contenido)
+    //         return contenido
+    //     }
+    //     catch (error) {
+    //         return []
+    //     }
+    // }
+
+     // try {
+        //     obj["id"] = this.products.length ? ((this.products[this.products.length - 1].id) + 1) : 1
+        //     this.products.push(obj)
+        //     return obj
+        // }
+        // catch (err) {
+        //     console.log(err)
+        //     return "wtf2"
+        // }

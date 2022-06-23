@@ -5,6 +5,10 @@ const app = express()
 const PORT = 8080
 const routes = require("./routes.js")
 const { Server: ioServer } = require("socket.io")
+const Container = require("./container")
+const { options } = require("./configDB")
+
+let msjDB = new Container(options.sqlite3, "msjs")
 
 const httpServer = http.createServer(app)
 const io = new ioServer(httpServer)
@@ -28,12 +32,12 @@ io.on("connection", (socket) => {
     //     io.sockets.emit("productos", container.getAll())
     // })
 
-    const msj = []
+    const msj = msjDB.getAll()
 
     socket.emit("chat", msj)
 
     socket.on("newMsj", newMsj => {
-        msj.push(newMsj)
+        msjDB.save(newMsj)
         io.sockets.emit("chat", msj)
     })
 })

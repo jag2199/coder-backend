@@ -1,9 +1,10 @@
 const Container = require("./container")
+const { options } = require("./configDB")
 const express = require("express")
 const { Router } = express
 const router = Router()
 
-let container = new Container("./productos.txt")
+let container = new Container(options.mariaDB, "productos")
 
 router.get("/", (req, res) => {
     res.render("index", { productos: container.getAll() })
